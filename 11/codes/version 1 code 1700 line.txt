@@ -1,0 +1,1694 @@
+#include <SFML\Window.hpp>
+#include <SFML\graphics.hpp>
+#include <SFML\Audio\Music.hpp>
+#include <iostream>
+#include <string>
+#include <SFML\Audio.hpp>
+#include <windows.h>
+#include <vector>
+#include <iomanip> 
+#include <ctime> 
+#include <cstdlib> 
+bool winner;
+
+using namespace sf;
+using namespace std;
+int Hx, Hy;
+unsigned int dtime = 700;
+sf::Color trans(0, 0, 0, 0);
+sf::Color co1(0, 0, 0, 20);
+sf::Color co2(0, 0, 0, 150);
+sf::Color co3(250, 250, 250, 150);
+sf::Color co4(250, 6, 40, 130);
+sf::Color co5(0, 0, 0, 100);
+sf::Color co6(0, 0, 0, 30);
+
+
+sf::Font font;
+string PL_N = "";
+string PL = "";
+sf::Music music, mu2;
+sf::SoundBuffer fbs, hbs, msbs, wbs, lbs;
+sf::Sound seffect, fs, hs, mss, ws, ls;
+
+sf::CircleShape c1, c2;
+sf::Vector2i playershps[15];
+sf::Texture win, BGimg, nextimg, imain, ch1, ch2, hs5, hs4, hs3, hs2, hs1, vs5, vs4, vs3, vs2, vs1, LOL, imgg;
+sf::Sprite winsp, BG, nextsp, Vsp, Hsp, ima, chs1, chs2, shs5, shs4, shs3, shs2, shs1, svs5, svs4, svs3, svs2, svs1, LOLs, SP1;
+sf::RectangleShape rect[11][11], rect2[11][11], Rect, BB[15], BB2[15];
+sf::Text pl_n, e_n, g_t, e_t, r_n;
+
+int Cpts = 15;
+int Ccbar = 0;
+int Cpbar = 14;
+sf::RenderWindow window(sf::VideoMode(1000 - 4, 600 - 21), "BATTLE SHIP V1.0", sf::Style::Close);
+
+vector<int>vecx;
+vector<int>vecy;
+sf::Vector2<int> vec[100];
+std::vector<sf::Vector3i> HR;
+
+
+
+bool Next = false;
+bool setted = false;
+int rectn = 15;
+bool Vertical;
+int Ppts = 15;
+vector<int>numx;
+vector<int>numy;
+vector<int>num;
+int xx = 0, yy = 0;
+void m1() { g_t.setString(" Now Set Your main ship \n > size : 5 units \n our country depends on u Captain.. "); }
+void m2() { g_t.setString(" Now Set Your submarine  \n > size : 4 units \n place it well  "); }
+void m3() { g_t.setString(" Now Set Your GPS-missile-ship \n > size : 3 units \n this ship is very important ! "); }
+void m4(){ g_t.setString(" Now Set Your mini-fighter ship \n > size : 2 units \n the fastest ship in your army ;) "); }
+void m5() { g_t.setString(" Now Set Your Health-ship \n > size : 1 units \n your ships need to recover after attack xD "); }
+void m6(){ g_t.setString(" NOW all ships moved to selected Position ,sir. \n > your enemy got ready too.\n Time for attack !! attack Enemy side now."); }
+
+void m7() { g_t.setString(" GOOD Work,Captian. \n your country proud of you <3 . \n Aim at next Target"); }
+void m8() { g_t.setString(" Never Sernder!! \n Try And Try more Targets \n we will Win trust me..."); }
+
+void m9() { g_t.setString(" OH NO , it was about to Hit us . \n GOD Always with US .. \n Your turn now"); }
+void m10() { g_t.setString(" WE ARE UNDER ATTACK! \n WE ARE UNDER ATTACK! \n WE ARE UNDER ATTACK! "); }
+
+void e1(){ e_t.setString(" Try Every thing !  \n you will Never Win this War \n iam The King LOL B| "); }
+
+void e2(){ e_t.setString(" Hahahahaahha ! as i said \n you will Never Ever.....  \n ....WIN. "); }
+void e3(){ e_t.setString(" if you think that is my end. \n you are Wrong,, \n I still have Many LOL. "); }
+
+void e4(){ e_t.setString(" Only The time of your death..\n has been extended \n hhahahhahahaha. "); }
+void e5(){ e_t.setString(" You are very weak ..\n your country will be mine soon 3:) \n hhahahahahaha. "); }
+
+
+
+
+
+
+void playMusic()
+{
+
+
+	// Play it
+	music.play();
+
+	// Loop while the music is playing
+	/* while (music.getStatus() == sf::Music::Playing)
+	{
+	// Leave some CPU time for other processes
+	sf::sleep(sf::milliseconds(100));
+
+	// Display the playing position
+	std::cout << "\rPlaying... " << std::fixed << std::setprecision(2) << music.getPlayingOffset().asSeconds() << " sec   ";
+	std::cout << std::flush;
+	}
+	std::cout << std::endl;*/
+}
+void Peffect(){
+
+	//music.pause();
+	seffect.play();
+	//music.play();
+
+
+
+
+
+}
+void hit1(){
+	seffect.setBuffer(hbs);
+	Peffect();
+
+}
+void hit2(){
+	seffect.setBuffer(msbs);
+	Peffect();
+
+}
+void curs(){
+	seffect.setBuffer(fbs);
+	Peffect();
+
+
+}
+void winS(){
+	music.stop();
+	seffect.setBuffer(wbs);
+	seffect.play();
+
+
+}
+void LoseS(){
+	music.stop();
+	seffect.setBuffer(lbs);
+	seffect.play();
+
+
+}
+void setsounds()
+{
+	music.openFromFile("RES/s/mainm.ogg");
+	hbs.loadFromFile("RES/s/hit.wav");
+	msbs.loadFromFile("RES/s/fish1.wav");
+	wbs.loadFromFile("RES/s/victory.wav");
+	lbs.loadFromFile("RES/s/laugh.wav");
+	fbs.loadFromFile("RES/s/co.wav");
+
+}
+void catch_n()
+{
+	for (int mo = 0; mo <= PL_N.size() - 1; mo++)
+	{
+		if (PL_N[mo] != ' ')
+
+		{
+			PL += PL_N[mo];
+		}
+		else
+			break;
+	}
+
+
+	r_n.setString(PL);
+}
+bool checkxx(int n, int &xx)
+{
+	int counter = 0;
+	for (int i = 0; i<num.size(); i++)
+	{
+		if (num[i] == n)
+			counter++;
+	}
+	if (counter == 0)
+	{
+		num.push_back(n);
+		xx = n;
+		return 1;
+	}
+	else
+		return 0;
+}
+
+void ran_num()
+{
+
+	srand((unsigned)time(0));
+	int random_integerx, random_integery;
+	int lowest = 0;
+	int highest = 99;
+	int range;
+	range = (highest - lowest) + 1;
+
+
+	int indexx = 1;
+	while (indexx)
+	{
+		random_integerx = lowest + int(range * rand() / (RAND_MAX + 1.0));
+		if (checkxx(random_integerx, xx))
+		{
+			indexx--;
+		}
+	}
+
+}
+
+void show()
+{} //cout << ' ' << HR[HR.size()-1].x<< ' ' << HR[HR.size()-1].y<< ' ' << HR[HR.size()-1].z<<endl;}
+bool checkx(int n)
+{
+	int counter = 0;
+	for (int i = 0; i<numx.size(); i++)
+	{
+		if (numx[i] == n)
+			counter++;
+	}
+	if (counter == 0)
+	{
+		numx.push_back(n);
+		return 1;
+	}
+	else
+		return 0;
+}
+bool checky(int n)
+{
+	int counter = 0;
+	for (int i = 0; i<numy.size(); i++)
+	{
+		if (numy[i] == n)
+			counter++;
+	}
+	if (counter == 0)
+	{
+		numy.push_back(n);
+		return 1;
+	}
+	else
+		return 0;
+}
+void stcbar(){
+	for (int i = 0; i<15; i++){
+		BB[i].setSize(sf::Vector2f(15, 15));
+
+		BB[i].setFillColor(trans);
+		BB[i].setPosition(i * 15 + 640, 10);
+
+
+	}
+}
+void stpbar(){
+	for (int i = 0; i<15; i++){
+		BB2[i].setSize(sf::Vector2f(15, 15));
+
+		BB2[i].setFillColor(trans);
+		BB2[i].setPosition(i * 15 + 135, 10);
+
+
+	}
+}
+void dwcbar(){
+
+	for (int i = 0; i<15; i++){
+		window.draw(BB[i]);
+
+	}
+}
+void dwpbar(){
+
+	for (int i = 0; i<15; i++){
+		window.draw(BB2[i]);
+
+	}
+}
+void ship_position()
+{
+	srand((unsigned)time(0));
+	int random_integerx, random_integery;
+	int lowest = 0;
+	int highest = 9;
+	int range;
+	range = (highest - lowest) + 1;
+	for (int index = 0; index < 5; index++)
+	{
+		random_integerx = lowest + int(range * rand() / (RAND_MAX + 1.0));
+		if (!checkx(random_integerx)) {
+			--index;
+			continue;
+		}
+		random_integery = lowest + int(range * rand() / (RAND_MAX + 1.0));
+		if (!checky(random_integerx)) {
+			--index;
+			continue;
+		}
+		//cout << setw(3) << index << " " << setw(3) <<"X= "<< random_integerx <<"\tY="<<random_integery<< endl; 
+	}
+	//ships horizontilly
+	int ships = 4;
+
+	if (Vertical == true)
+	{
+		for (int i = 0; i<5; i++)
+		{
+			vecx.push_back(numx[i]);
+			vecy.push_back(numy[i]);
+			if (numy[i] >= 5)
+			{
+				for (int j = 1; j <= ships; j++)
+				{
+					vecx.push_back(numx[i]);
+					vecy.push_back(numy[i] - j);
+				}
+			}
+			else if (numy[i]<5)
+			{
+				for (int j = 1; j <= ships; j++)
+				{
+					vecx.push_back(numx[i]);
+					vecy.push_back(numy[i] + j);
+				}
+			}
+			ships--;
+		}
+	}
+	else{
+		//ships vertical
+		for (int i = 0; i<5; i++)
+		{
+			vecx.push_back(numx[i]);
+			vecy.push_back(numy[i]);
+			if (numy[i] >= 5)
+			{
+				for (int j = 1; j <= ships; j++)
+				{
+					vecy.push_back(numy[i]);
+					vecx.push_back(numx[i] - j);
+				}
+			}
+			else if (numy[i]<5)
+			{
+				for (int j = 1; j <= ships; j++)
+				{
+					vecy.push_back(numy[i]);
+					vecx.push_back(numx[i] + j);
+				}
+			}
+			ships--;
+		}
+	}
+
+	for (int i = 0; i<vecx.size(); i++)
+	{//cout << setw(3) << i+1 << " " << setw(3) <<"X= "<< vecx[i] <<"\tY="<<vecy[i]<< endl;
+
+		vec[i].x = vecx[i];
+		vec[i].y = vecy[i];
+		//rect2[vec[i].x][vec[i].y].setFillColor(sf::Color::Green);
+
+	}
+
+	setted = true;
+
+}
+void setsc2()
+{
+
+	if (winner == true)
+
+	{
+		win.loadFromFile("RES/win.png");
+	}
+	else
+
+	{
+		win.loadFromFile("RES/lose.png");
+	}
+
+	winsp.setTexture(win);
+	winsp.setPosition(0, 0);
+
+
+}
+void setsc0()
+{
+	font.loadFromFile("RES/pro.ttf");
+	pl_n.setFont(font);
+	pl_n.setCharacterSize(40);
+	pl_n.setColor(sf::Color::White);
+	pl_n.setPosition(32, 90);
+	pl_n.setString(PL_N);
+	BGimg.loadFromFile("RES/Battleship1.png");
+	BG.setTexture(BGimg);
+	BG.setPosition(0, 0);
+	nextimg.loadFromFile("RES/next.png");
+	nextsp.setPosition(800, 480);
+	nextsp.setTexture(nextimg);
+	LOL.loadFromFile("RES/cover.png");
+	LOLs.setTexture(LOL);
+	LOLs.setPosition(0, -10);
+	Vsp.setPosition(61, 212);
+	Vsp.setTexture(nextimg);
+	Hsp.setPosition(60, 271);
+	Hsp.setTexture(nextimg);
+	c1.setRadius(6);
+	c1.setFillColor(sf::Color::White);
+	c1.setOutlineThickness(1.5);
+	c1.setOutlineColor(sf::Color::White);
+	c2.setRadius(6);
+	c2.setFillColor(sf::Color::White);
+	c2.setOutlineThickness(1.5);
+	c2.setOutlineColor(sf::Color::White);
+	c1.setPosition(15, 228);
+	c2.setPosition(15, 275);
+
+}
+void setsc1(){
+
+
+
+	imgg.loadFromFile("RES/img.png");
+
+	imain.loadFromFile("RES/main.png");
+	ch1.loadFromFile("RES/ch1.png");
+	ch2.loadFromFile("RES/ch2.jpg");
+	hs5.loadFromFile("RES/s5.png"); hs4.loadFromFile("RES/s4.png"); hs3.loadFromFile("RES/s3.png"); hs2.loadFromFile("RES/s2.png"); hs1.loadFromFile("RES/s1.png");
+	shs5.setTexture(hs5); shs4.setTexture(hs4); shs3.setTexture(hs3); shs2.setTexture(hs2); shs1.setTexture(hs1);
+	shs5.setPosition(-200, -200); shs4.setPosition(-200, -200); shs3.setPosition(-200, -200); shs2.setPosition(-200, -200); shs1.setPosition(-200, -200);
+	vs5.loadFromFile("RES/vs5.png"); vs4.loadFromFile("RES/vs4.png"); vs3.loadFromFile("RES/vs3.png"); vs2.loadFromFile("RES/vs2.png"); vs1.loadFromFile("RES/vs1.png");
+	svs5.setTexture(vs5); svs4.setTexture(vs4); svs3.setTexture(vs3); svs2.setTexture(vs2); svs1.setTexture(vs1);
+	svs5.setPosition(-200, -200); svs4.setPosition(-200, -200); svs3.setPosition(-200, -200); svs2.setPosition(-200, -200); svs1.setPosition(-200, -200);
+
+	SP1.setTexture(imgg);
+
+	SP1.setTextureRect(sf::IntRect(0, 5600, 250, 206));
+	SP1.setPosition(380, 125);
+
+	ima.setTexture(imain);
+	ima.setPosition(0, 0);
+	chs1.setTexture(ch1);
+	chs1.setPosition(50, 475);
+	chs2.setTexture(ch2);
+	chs2.setPosition(867, 472);
+
+	r_n.setCharacterSize(30);
+	r_n.setFont(font);
+	r_n.setColor(sf::Color::White);
+	r_n.setString(PL);
+	r_n.setPosition(30, 10);
+
+	e_n.setCharacterSize(28);
+	e_n.setFont(font);
+	e_n.setColor(sf::Color::White);
+	e_n.setString("Enemy");
+	e_n.setPosition(885, 10);
+
+	g_t.setCharacterSize(15);
+	g_t.setFont(font);
+	g_t.setColor(sf::Color::Black);
+	m1();
+	g_t.setPosition(175, 480);
+	e_t.setCharacterSize(15);
+	e_t.setFont(font);
+	e_t.setColor(sf::Color::Black);
+	e1();
+	e_t.setPosition(560, 480);
+
+
+
+}
+void stpmap(){
+
+
+
+	for (int i = 0; i<10; i++)
+	{
+
+
+		for (int j = 0; j<10; j++)
+		{
+
+			rect[i][j].setSize(sf::Vector2f(30, 30));
+			rect[i][j].setOutlineThickness(1);
+			rect[i][j].setFillColor(co1);
+			rect[i][j].setOutlineColor(co1);
+			rect[i][j].setPosition(j * 30 + 10, i * 30 + 100);
+
+
+		}
+	}
+};
+void stcmap(){
+	for (int i = 0; i<10; i++)
+	{
+		for (int j = 0; j<10; j++)
+		{
+
+			rect2[i][j].setSize(sf::Vector2f(30, 30));
+			rect2[i][j].setOutlineThickness(1);
+			rect2[i][j].setFillColor(co1);
+			rect2[i][j].setOutlineColor(co1);
+			rect2[i][j].setPosition(i * 30 + 690, j * 30 + 100);
+
+
+		}
+	}
+};
+void dwpmap(){
+	for (int i = 0; i<10; i++)
+	{
+		for (int j = 0; j <= 10; j++)
+		{
+
+			window.draw(rect[i][j]);
+		}
+	}
+}
+void dwcmap(){
+	for (int i = 0; i<10; i++)
+	{
+		for (int j = 0; j <= 10; j++)
+		{
+
+			window.draw(rect2[i][j]);
+		}
+	}
+}
+void iSocu()
+{
+
+	int c = 0;
+	for (int i = 0; i<10; i++)
+	{
+		for (int j = 0; j<10; j++)
+		{
+			if (rect[i][j].getFillColor() == co6)
+			{
+				playershps[c].x = i;
+				playershps[c].y = j;
+				c++;
+			}
+
+
+		}
+	}
+
+
+	/*for(int i =0 ; i<15; i++)
+	{
+	cout<<playershps[i].x<<" "<<playershps[i].y<<endl;
+
+	}*/
+}
+void sc2loop(){
+	sf::Event ev;
+
+	while (window.pollEvent(ev))
+	{
+
+		if (ev.type == sf::Event::Closed)
+		{
+			window.close(); cout << "THE GAME WAS CLOSED HOPE YOU HAD FUN \n DEVS : \t Mohamed Saeed \t Nada Nassar \t Yassmin Abubakr \n our 1st game& project ;) \n JUST THE BEGINNING . " << endl;
+		}
+
+
+	}
+	window.clear();
+	window.draw(winsp);
+	window.display();
+
+
+
+}
+void update(){
+	window.clear();
+	window.draw(chs1); window.draw(chs2); window.draw(ima);
+	window.draw(SP1);
+	dwpmap();
+	dwcmap();
+	dwpbar();
+	dwcbar();
+
+	window.draw(shs5); window.draw(shs4); window.draw(shs3); window.draw(shs2); window.draw(shs1);
+	window.draw(svs5); window.draw(svs4); window.draw(svs3); window.draw(svs2); window.draw(svs1);
+	window.draw(r_n); window.draw(e_n); window.draw(g_t); window.draw(e_t);
+	window.display();
+}
+void aniship()
+{
+
+	for (int i = 0; i < 26; i++)
+	{
+		SP1.setTextureRect(sf::IntRect(0, 200 * i, 250, 206));
+		update();
+		sf::sleep(sf::milliseconds(50));
+	}
+
+
+	SP1.setTextureRect(sf::IntRect(0, 5600, 250, 206));
+}
+
+void computerturn(){
+
+	if (winner == false)
+	{
+
+		if (Vertical == false)
+		{
+			while (true)
+			{
+
+
+				if (HR[HR.size() - 1].z == 0)
+				{
+					ran_num();
+					int tx = xx / 10;
+					int ty = xx % 10;
+
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (tx == playershps[o].x &&ty == playershps[o].y)
+
+						{
+							rect[tx][ty].setFillColor(co4);
+							m10(); e5();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							hit1();
+							if (Cpts == 0)
+							{
+								winner = false;
+								LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = tx;
+							VI.y = ty;
+							VI.z = 1;
+							HR.push_back(VI);
+							Hx = tx; Hy = ty;
+							//show();
+							sleep(sf::milliseconds(dtime));
+							update();
+
+							break;
+
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[tx][ty].setFillColor(co5); m9(); e4();
+						sf::Vector3i VI;
+						VI.x = tx;
+						VI.y = ty;
+						VI.z = 0;
+						HR.push_back(VI);
+						show();
+						update();
+						sleep(sf::milliseconds(dtime));
+						break;
+					}
+				}
+
+
+				else if (HR[HR.size() - 1].z == 1)
+				{
+
+
+					int TX = HR[HR.size() - 1].x;
+					int TY = HR[HR.size() - 1].y + 1;
+					int ran = TX * 10 + TY;
+					num.push_back(ran);
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (TX == playershps[o].x &&TY == playershps[o].y)
+
+						{
+							rect[TX][TY].setFillColor(co4);
+							m10(); e5();
+							hit1();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							if (Cpts == 0)
+							{
+								winner = false;
+								LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = TX;
+							VI.y = TY;
+							VI.z = 2;
+							HR.push_back(VI);
+							show();
+							update();
+							sleep(sf::milliseconds(dtime));
+							break;
+
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[TX][TY].setFillColor(co5); m9(); e4();
+						sf::Vector3i VI;
+						VI.x = TX;
+						VI.y = TY;
+						VI.z = 3;
+						HR.push_back(VI);
+						show();
+						update();
+						sleep(sf::milliseconds(dtime));
+						break;
+					}
+
+
+				}
+
+				else if (HR[HR.size() - 1].z == 2)
+				{
+
+					int TX = HR[HR.size() - 1].x;
+					int TY = HR[HR.size() - 1].y + 1;
+					int ran = TX * 10 + TY;
+					num.push_back(ran);
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (TX == playershps[o].x &&TY == playershps[o].y)
+
+						{
+							rect[TX][TY].setFillColor(co4);
+							m10(); e5();
+							hit1();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							if (Cpts == 0)
+							{
+								winner = false; LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = TX;
+							VI.y = TY;
+							VI.z = 2;
+							HR.push_back(VI);
+							show();
+							update();
+							sleep(sf::milliseconds(dtime));
+							break;
+
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[TX][TY].setFillColor(co5); m9(); e4();
+						sf::Vector3i VI;
+						VI.x = TX;
+						VI.y = TY;
+						VI.z = 3;
+						HR.push_back(VI);
+						show();
+						update();
+						sleep(sf::milliseconds(dtime));
+						break;
+					}
+
+				}
+
+				else if (HR[HR.size() - 1].z == 3)
+				{
+
+
+					int TX = Hx;
+					int TY = Hy - 1;
+					int ran = TX * 10 + TY;
+					num.push_back(ran);
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (TX == playershps[o].x &&TY == playershps[o].y)
+
+						{
+							rect[TX][TY].setFillColor(co4);
+							m10(); e5();
+							hit1();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							if (Cpts == 0)
+							{
+								winner = false; LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = TX;
+							VI.y = TY;
+							VI.z = -1;
+							HR.push_back(VI);
+							show();
+							sleep(sf::milliseconds(dtime));
+							break;
+
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[TX][TY].setFillColor(co5); m9(); e4();
+						sf::Vector3i VI;
+						VI.x = TX;
+						VI.y = TY;
+						VI.z = -2;
+						HR.push_back(VI);
+						show();
+						update();
+						sleep(sf::milliseconds(dtime));
+						break;
+					}
+
+				}
+
+				else if (HR[HR.size() - 1].z == -1)
+				{
+
+					int TX = HR[HR.size() - 1].x;
+					int TY = HR[HR.size() - 1].y - 1;
+					int ran = TX * 10 + TY;
+					num.push_back(ran);
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (TX == playershps[o].x &&TY == playershps[o].y)
+
+						{
+							rect[TX][TY].setFillColor(co4);
+							m10(); e5();
+							hit1();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							if (Cpts == 0)
+							{
+								winner = false; LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = TX;
+							VI.y = TY;
+							VI.z = -1;
+							HR.push_back(VI);
+							show();
+							update();
+							sleep(sf::milliseconds(dtime));
+							break;
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[TX][TY].setFillColor(co5); m9(); e4();
+						sf::Vector3i VI;
+						VI.x = TX;
+						VI.y = TY;
+						VI.z = -2;
+						HR.push_back(VI);
+						show();
+						update();
+						sleep(sf::milliseconds(dtime));
+						break;
+					}
+
+				}
+
+
+				else if (HR[HR.size() - 1].z == -2)
+				{
+
+					ran_num();
+					int tx = xx / 10;
+					int ty = xx % 10;
+
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (tx == playershps[o].x &&ty == playershps[o].y)
+
+						{
+							rect[tx][ty].setFillColor(co4);
+							m10(); e5();
+							hit1();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							if (Cpts == 0)
+							{
+								winner = false; LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = tx;
+							VI.y = ty;
+							VI.z = 1;
+							HR.push_back(VI);
+							Hx = tx; Hy = ty;
+							show();
+							update();
+							sleep(sf::milliseconds(dtime));
+							break;
+
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[tx][ty].setFillColor(co5); m9(); e4();
+						sf::Vector3i VI;
+						VI.x = tx;
+						VI.y = ty;
+						VI.z = 0;
+						HR.push_back(VI);
+						show();
+						sleep(sf::milliseconds(dtime));
+						update();
+
+						break;
+					}
+				}
+
+				else continue;
+			}
+		}
+		else
+		{
+			while (true)
+			{
+
+
+				if (HR[HR.size() - 1].z == 0)
+				{
+					ran_num();
+					int tx = xx / 10;
+					int ty = xx % 10;
+
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (tx == playershps[o].x &&ty == playershps[o].y)
+
+						{
+							rect[tx][ty].setFillColor(co4); m10(); e5();
+							hit1();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							if (Cpts == 0)
+							{
+								winner = false; LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = tx;
+							VI.y = ty;
+							VI.z = 1;
+							HR.push_back(VI);
+							Hx = tx; Hy = ty;
+							show();
+							update();
+							sleep(sf::milliseconds(dtime));
+							break;
+
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[tx][ty].setFillColor(co5); m9(); e4();
+						sf::Vector3i VI;
+						VI.x = tx;
+						VI.y = ty;
+						VI.z = 0;
+						HR.push_back(VI);
+						show();
+						update();
+						sleep(sf::milliseconds(dtime));
+						break;
+					}
+				}
+
+
+				else if (HR[HR.size() - 1].z == 1)
+				{
+
+
+					int TX = HR[HR.size() - 1].x + 1;
+					int TY = HR[HR.size() - 1].y;
+					int ran = TX * 10 + TY;
+					num.push_back(ran);
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (TX == playershps[o].x &&TY == playershps[o].y)
+
+						{
+							rect[TX][TY].setFillColor(co4); m10(); e5();
+							hit1();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							if (Cpts == 0)
+							{
+								winner = false; LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = TX;
+							VI.y = TY;
+							VI.z = 2;
+							HR.push_back(VI);
+							show();
+							update();
+							sleep(sf::milliseconds(dtime));
+							break;
+
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[TX][TY].setFillColor(co5); m9(); e4();
+						sf::Vector3i VI;
+						VI.x = TX;
+						VI.y = TY;
+						VI.z = 3;
+						HR.push_back(VI);
+						show();
+						update();
+						sleep(sf::milliseconds(dtime));
+						break;
+					}
+
+
+				}
+
+				else if (HR[HR.size() - 1].z == 2)
+				{
+
+					int TX = HR[HR.size() - 1].x + 1;
+					int TY = HR[HR.size() - 1].y;
+					int ran = TX * 10 + TY;
+					num.push_back(ran);
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (TX == playershps[o].x &&TY == playershps[o].y)
+
+						{
+							rect[TX][TY].setFillColor(co4); m10(); e5();
+							hit1();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							if (Cpts == 0)
+							{
+								winner = false; LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = TX;
+							VI.y = TY;
+							VI.z = 2;
+							HR.push_back(VI);
+							show();
+							update();
+							sleep(sf::milliseconds(dtime));
+							break;
+
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[TX][TY].setFillColor(co5); m9(); e4();
+						sf::Vector3i VI;
+						VI.x = TX;
+						VI.y = TY;
+						VI.z = 3;
+						HR.push_back(VI);
+						show();
+						update();
+						sleep(sf::milliseconds(dtime));
+						break;
+					}
+
+				}
+
+				else if (HR[HR.size() - 1].z == 3)
+				{
+
+
+					int TX = Hx - 1;
+					int TY = Hy;
+					int ran = TX * 10 + TY;
+					num.push_back(ran);
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (TX == playershps[o].x &&TY == playershps[o].y)
+
+						{
+							rect[TX][TY].setFillColor(co4); m10(); e5();
+							hit1();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							if (Cpts == 0)
+							{
+								winner = false; LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = TX;
+							VI.y = TY;
+							VI.z = -1;
+							HR.push_back(VI);
+							show();
+							update();
+							sleep(sf::milliseconds(dtime));
+							break;
+
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[TX][TY].setFillColor(co5); m9(); e4();
+
+						sf::Vector3i VI;
+						VI.x = TX;
+						VI.y = TY;
+						VI.z = -2;
+						HR.push_back(VI);
+						show();
+						update();
+						sleep(sf::milliseconds(dtime));
+						break;
+					}
+
+				}
+
+				else if (HR[HR.size() - 1].z == -1)
+				{
+
+					int TX = HR[HR.size() - 1].x - 1;
+					int TY = HR[HR.size() - 1].y;
+					int ran = TX * 10 + TY;
+					num.push_back(ran);
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (TX == playershps[o].x &&TY == playershps[o].y)
+
+						{
+							rect[TX][TY].setFillColor(co4); m10(); e5();
+							hit1();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							if (Cpts == 0)
+							{
+								winner = false; LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = TX;
+							VI.y = TY;
+							VI.z = -1;
+							HR.push_back(VI);
+							show();
+							update();
+							sleep(sf::milliseconds(dtime));
+							break;
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[TX][TY].setFillColor(co5); m9(); e4();
+						sf::Vector3i VI;
+						VI.x = TX;
+						VI.y = TY;
+						VI.z = -2;
+						HR.push_back(VI);
+						show();
+						update();
+						sleep(sf::milliseconds(dtime));
+						break;
+					}
+
+				}
+
+
+				else if (HR[HR.size() - 1].z == -2)
+				{
+
+					ran_num();
+					int tx = xx / 10;
+					int ty = xx % 10;
+
+					bool aa = false;
+					for (int o = 0; o<15; o++)
+					{
+						if (tx == playershps[o].x &&ty == playershps[o].y)
+
+						{
+							rect[tx][ty].setFillColor(co4); m10(); e5();
+							hit1();
+							aa = true; Cpts--;//cout<<Cpts<<"C"<<endl;
+							BB2[Cpbar].setFillColor(sf::Color::Black);
+							Cpbar--;
+							if (Cpts == 0)
+							{
+								winner = false; LoseS();
+							}
+							sf::Vector3i VI;
+							VI.x = tx;
+							VI.y = ty;
+							VI.z = 1;
+							HR.push_back(VI);
+							Hx = tx; Hy = ty;
+							show();
+							update();
+							sleep(sf::milliseconds(dtime));
+							break;
+
+						}
+					}
+
+					if (aa == false)
+					{
+						rect[tx][ty].setFillColor(co5); m9(); e4();
+						sf::Vector3i VI;
+						VI.x = tx;
+						VI.y = ty;
+						VI.z = 0;
+						HR.push_back(VI);
+						show();
+						sleep(sf::milliseconds(dtime));
+						update();
+
+						break;
+					}
+				}
+
+				else continue;
+			}
+
+		}
+
+	}
+}
+void update0()
+{
+	window.clear();
+
+	window.draw(BG);
+	window.draw(pl_n);
+	window.draw(c1);
+	window.draw(c2);
+	window.display();
+
+}
+bool load = false;
+void sc0loop()
+{
+
+
+
+	if (load == false)
+	{
+		window.clear();
+		window.draw(LOLs);
+		window.display();
+		load = true;
+		sleep(sf::milliseconds(1000));
+	}
+
+
+
+
+
+	sf::Event ev;
+
+	while (window.pollEvent(ev))
+	{
+		sf::Vector2i MP = sf::Mouse::getPosition(window);
+
+
+
+		if (nextsp.getGlobalBounds().contains(MP.x, MP.y) && sf::Mouse::isButtonPressed(sf::Mouse::Left) && PL_N != "" && ((c1.getFillColor() == sf::Color::Black) || (c2.getFillColor() == sf::Color::Black)))
+		{
+			Next = true;
+			ship_position();
+			catch_n();
+			curs();
+			mu2.stop();
+			playMusic();
+		}
+
+		if (Vsp.getGlobalBounds().contains(MP.x, MP.y) && sf::Mouse::isButtonPressed(sf::Mouse::Left))//&&(c2.getFillColor()!=sf::Color::Black))
+		{
+			curs();
+			c1.setFillColor(sf::Color::Black);
+			c2.setFillColor(sf::Color::White);
+			Vertical = true;
+
+		}
+		else if (Hsp.getGlobalBounds().contains(MP.x, MP.y) && sf::Mouse::isButtonPressed(sf::Mouse::Left))//&&(c1.getFillColor()!=sf::Color::Black))
+		{
+			curs();
+			c2.setFillColor(sf::Color::Black);
+
+			c1.setFillColor(sf::Color::White);
+			Vertical = false;
+
+
+		}
+
+		if (ev.type == sf::Event::Closed)
+		{
+
+			window.close(); cout << "THE GAME WAS CLOSED HOPE YOU HAD FUN \n DEVS : \t Mohamed Saeed \t Nada Nassar \t Yassmin Abubakr \n our 1st game& project ;) \n JUST THE BEGINNING . " << endl;
+		}
+
+
+	}
+
+	if (ev.type == sf::Event::TextEntered){
+		sleep(sf::milliseconds(200));
+
+		if (ev.text.unicode < 128 && ev.text.unicode != 8 && ev.text.unicode != 13 && PL_N.length() <= 10){
+			PL_N += ev.text.unicode;
+
+			update0();
+
+			curs();
+
+		}
+		else{
+			/// if BACKSPACE key is pressed
+			if (ev.text.unicode == 8 && PL_N.length() > 0){
+				PL_N.erase(PL_N.length() - 1);
+			}
+			/// if ENTER key is pressed
+			if (ev.text.unicode == 13 && PL_N.length() > 0){
+				Next = true;
+				ship_position();
+				catch_n();
+				curs();
+				mu2.stop();
+				playMusic();
+			}
+		}
+	}
+
+	pl_n.setString(PL_N);
+
+	update0();
+
+}
+void sc1loop(){
+
+
+
+
+
+
+
+
+
+	setsc0();
+	setsc1();
+	stpbar();
+	stcbar();
+	stpmap(); stcmap();
+
+	int shpn = 5;
+	while (window.isOpen())
+	{
+		if (Next == false)
+		{
+			sc0loop();
+			/*if(setted== false)
+			{
+			ship_position();
+			}*/
+
+		}
+		else{
+
+
+			if (Ppts >0 && Cpts>0)
+			{
+
+				sf::Event event, ev;
+
+				sf::Vector2i MP = sf::Mouse::getPosition(window);
+				/*if (sf::Event::MouseMoved)
+				{
+
+					cout << "x=" << MP.x << "Y" << MP.y << endl;
+				}*/
+				for (int j = 0; j <= 10; j++)
+				{
+					for (int i = 0; i <= 10; i++)
+					{
+						//hitmap
+						if (rect2[j][i].getGlobalBounds().contains(MP.x, MP.y) && (shpn <= 0) && (rect2[j][i].getFillColor() != co5) && (rect2[j][i].getFillColor() != co4))
+						{
+							rect2[j][i].setFillColor(co3);
+						}
+
+
+						if (rect2[j][i].getGlobalBounds().contains(MP.x, MP.y) && (sf::Mouse::isButtonPressed(sf::Mouse::Left)) && (rect2[j][i].getFillColor() != co5) && (shpn <= 0) && (rect2[j][i].getFillColor() != co4))
+						{
+							sleep(sf::milliseconds(200));
+							bool a = false;
+							for (int o = 0; o<15; o++)
+							{
+								if (j == vec[o].x &&i == vec[o].y)
+
+								{
+
+									rect2[j][i].setFillColor(co4);
+									m7(); e3();
+									hit1();
+									aniship();
+									a = true; Ppts--;//cout<<Ppts<<endl; 
+									BB[Ccbar].setFillColor(sf::Color::Black);
+									Ccbar++;
+									if (Ppts == 0)
+									{
+										winner = true; winS();
+									}
+								}
+							}
+
+							if (a == false)
+
+							{
+								rect2[j][i].setFillColor(co5);
+								hit2();
+								m8(); e2();
+								update();
+								sleep(sf::milliseconds(300));
+								computerturn();
+
+							}
+						}
+
+						else if (!rect2[j][i].getGlobalBounds().contains(MP.x, MP.y) && (rect2[j][i].getFillColor() != co5) && (rect2[j][i].getFillColor() != co4) && (shpn <= 0))
+						{
+
+
+							rect2[j][i].setFillColor(co1);
+
+						}
+						//	
+
+						//player map
+						if (rect[j][i].getGlobalBounds().contains(MP.x, MP.y) && (rect[j][i].getFillColor() != co6) && shpn >= 1)
+						{
+
+							rect[j][i].setFillColor(co3);
+						}
+
+						if (rect[j][i].getGlobalBounds().contains(MP.x, MP.y) && (sf::Mouse::isButtonPressed(sf::Mouse::Left)) && (rect[j][i].getFillColor() != co6) && shpn >= 1 && (rect[j][i].getFillColor() != co5) && (rect[j][i].getFillColor() != co4))
+
+						{
+							curs();
+
+							sleep(sf::milliseconds(200));
+							//horizontal
+							if (Vertical == false){
+								sf::Vector2f bn(rect[j][i].getPosition());
+								if (i <= 4)
+
+								{
+
+
+									if (shpn == 5)
+									{
+										shs5.setPosition(bn.x, bn.y);                             m2();
+									}
+									else if (shpn == 4)
+									{
+										shs4.setPosition(sf::Vector2f(rect[j][i].getPosition())); m3();
+									}
+
+									else if (shpn == 3)
+									{
+										shs3.setPosition(sf::Vector2f(rect[j][i].getPosition())); m4();
+									}
+
+									else if (shpn == 2)
+									{
+										shs2.setPosition(sf::Vector2f(rect[j][i].getPosition())); m5();
+									}
+									else if (shpn == 1)
+									{
+										shs1.setPosition(sf::Vector2f(rect[j][i].getPosition())); m6();
+									}
+
+
+									for (int k = i; k <= shpn + i - 1; k++)
+									{
+										rect[j][k].setFillColor(co6);
+
+
+									}
+								}
+								else{
+
+									if (shpn == 5)
+									{
+										shs5.setPosition(bn.x - 120, bn.y); m2();
+									}
+									else if (shpn == 4)
+									{
+										shs4.setPosition(bn.x - 90, bn.y); m3();
+									}
+									else if (shpn == 3)
+									{
+										shs3.setPosition(bn.x - 60, bn.y); m4();
+									}
+									else if (shpn == 2)
+									{
+										shs2.setPosition(bn.x - 30, bn.y); m5();
+									}
+									else if (shpn == 1)
+									{
+										shs1.setPosition(bn.x - 00, bn.y); m6();
+									}
+									for (int k = i; k >= i - shpn + 1; k--)
+									{
+										rect[j][k].setFillColor(co6);
+
+
+
+
+
+
+									}
+								}
+
+
+
+								shpn--;
+							}//cout<<shpn<<endl;}
+							//vertical
+							else{
+								sf::Vector2f bn(rect[j][i].getPosition());
+								if (j <= 4)
+
+								{
+
+									if (shpn == 5)
+									{
+										svs5.setPosition(bn.x, bn.y); m2();
+									}
+									else if (shpn == 4)
+									{
+										svs4.setPosition(sf::Vector2f(rect[j][i].getPosition())); m3();
+									}
+
+									else if (shpn == 3)
+									{
+										svs3.setPosition(sf::Vector2f(rect[j][i].getPosition())); m4();
+									}
+
+									else if (shpn == 2)
+									{
+										svs2.setPosition(sf::Vector2f(rect[j][i].getPosition())); m5();
+									}
+									else if (shpn == 1)
+									{
+										svs1.setPosition(sf::Vector2f(rect[j][i].getPosition())); m6();
+									}
+
+
+
+									for (int k = j; k <= shpn + j - 1; k++)
+									{
+										rect[k][i].setFillColor(co6);
+									}
+								}
+								else{
+
+									if (shpn == 5)
+									{
+										svs5.setPosition(bn.x, bn.y - 120); m2();
+									}
+									else if (shpn == 4)
+									{
+										svs4.setPosition(bn.x, bn.y - 90); m3();
+									}
+									else if (shpn == 3)
+									{
+										svs3.setPosition(bn.x, bn.y - 60); m4();
+									}
+									else if (shpn == 2)
+									{
+										svs2.setPosition(bn.x, bn.y - 30); m5();
+									}
+									else if (shpn == 1)
+									{
+										svs1.setPosition(bn.x, bn.y - 00); m6();
+									}
+
+
+
+									for (int k = j; k >= j - shpn + 1; k--)
+									{
+										rect[k][i].setFillColor(co6);
+									}
+								}
+
+
+								//int x=j;int y=i; cout<<x<<" "<<y<<endl;
+								shpn--;
+							}//cout<<shpn<<endl;}
+							iSocu();
+						}
+						else if (!rect[j][i].getGlobalBounds().contains(MP.x, MP.y) && (rect[j][i].getFillColor() != co6) && (rect[j][i].getFillColor() != co5) && (rect[j][i].getFillColor() != co4))
+						{
+
+
+							rect[j][i].setFillColor(co1);
+
+						}
+						//
+					}
+
+				}
+
+
+
+				while (window.pollEvent(event))
+				{
+
+					if (event.type == sf::Event::Closed)
+					{
+						window.close(); cout << "THE GAME WAS CLOSED HOPE YOU HAD FUN \n DEVS : \t Mohamed Saeed \t Nada Nassar \t Yassmin Abubakr \n our 1st game& project ;) \n JUST THE BEGINNING . " << endl;
+					}
+				}
+
+				update();
+
+			}
+
+			else
+			{
+				setsc2();
+				sc2loop();
+
+			}
+		}
+
+	}
+
+
+}
+
+void main()
+
+{
+
+	music.setLoop(true);
+	mu2.setLoop(true);
+	mu2.openFromFile("RES/s/ptq.wav");
+	mu2.play();
+	setsounds();
+	sf::Vector3i VP;
+	VP.x = -1;
+	VP.y = -1;
+	VP.z = 0;
+	HR.push_back(VP);
+
+	sc1loop();
+
+
+}
